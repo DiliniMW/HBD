@@ -3,8 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'audio_player.dart';
-
 void main() => runApp(const BirthdayApp());
 
 class BirthdayApp extends StatelessWidget {
@@ -41,9 +39,6 @@ class BirthdayPage extends StatefulWidget {
 class _BirthdayPageState extends State<BirthdayPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animation;
-  final BirthdayAudioPlayer _audio = BirthdayAudioPlayer();
-  bool _isPlaying = false;
-  String? _audioMessage;
 
   @override
   void initState() {
@@ -54,27 +49,9 @@ class _BirthdayPageState extends State<BirthdayPage>
     )..repeat();
   }
 
-  Future<void> _toggleMusic() async {
-    try {
-      final isPlaying = await _audio.toggle();
-      if (!mounted) return;
-      setState(() {
-        _isPlaying = isPlaying;
-        _audioMessage = null;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _isPlaying = false;
-        _audioMessage = 'Add assets/audio/drip_chorus.mp3 to play the chorus.';
-      });
-    }
-  }
-
   @override
   void dispose() {
     _animation.dispose();
-    _audio.dispose();
     super.dispose();
   }
 
@@ -97,64 +74,12 @@ class _BirthdayPageState extends State<BirthdayPage>
                 padding: const EdgeInsets.all(24),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 820),
-                  child: Column(
-                    children: [
-                      const _QuestBadge(),
-                      const SizedBox(height: 24),
-                      const _BirthdayCard(),
-                      const SizedBox(height: 22),
-                      _MusicButton(
-                        isPlaying: _isPlaying,
-                        onPressed: _toggleMusic,
-                      ),
-                      if (_audioMessage != null) ...[
-                        const SizedBox(height: 12),
-                        Semantics(
-                          liveRegion: true,
-                          child: Text(
-                            _audioMessage!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Color(0xFFFFCA70),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+                  child: const _BirthdayCard(),
                 ),
               ),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _QuestBadge extends StatelessWidget {
-  const _QuestBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-      decoration: BoxDecoration(
-        color: const Color(0xFF35243B),
-        border: Border.all(color: const Color(0xFFE77931), width: 3),
-        boxShadow: const [
-          BoxShadow(color: Color(0xFF09070D), offset: Offset(5, 5)),
-        ],
-      ),
-      child: const Text(
-        '★  NEW QUEST UNLOCKED  ★',
-        style: TextStyle(
-          color: Color(0xFFFFCA70),
-          fontSize: 13,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 1.4,
-        ),
       ),
     );
   }
@@ -209,7 +134,7 @@ class _BirthdayCard extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           const Text(
-            'LEVEL UP  +1',
+            'LEVEL UP  +25',
             style: TextStyle(
               color: Color(0xFFB9D66B),
               fontSize: 16,
@@ -218,35 +143,6 @@ class _BirthdayCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _MusicButton extends StatelessWidget {
-  const _MusicButton({required this.isPlaying, required this.onPressed});
-
-  final bool isPlaying;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(isPlaying ? Icons.pause_rounded : Icons.music_note_rounded),
-      label: Text(isPlaying ? 'PAUSE THE CHORUS' : 'PLAY THE CHORUS'),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: const Color(0xFF221622),
-        backgroundColor: const Color(0xFFFFA347),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-        textStyle: const TextStyle(
-          fontWeight: FontWeight.w900,
-          letterSpacing: 1,
-        ),
-        shape: const RoundedRectangleBorder(),
-        side: const BorderSide(color: Color(0xFFFFD36A), width: 3),
-        elevation: 8,
-        shadowColor: const Color(0xFF09070D),
       ),
     );
   }
